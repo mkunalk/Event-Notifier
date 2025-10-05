@@ -3,6 +3,7 @@ package com.assesment.notification.taskExcecutorConfig;
 import com.assesment.notification.dataTo.CallBackResponse;
 import com.assesment.notification.dataTo.EventRequest;
 import com.google.firebase.messaging.FirebaseMessaging;
+import com.google.firebase.messaging.FirebaseMessagingException;
 import com.google.firebase.messaging.Message;
 import com.google.firebase.messaging.Notification;
 import lombok.RequiredArgsConstructor;
@@ -20,9 +21,9 @@ import java.util.Random;
 public class PushNotificationProcessor {
     private final FirebaseMessaging firebaseMessaging;
     private final RestTemplate restTemplate;
-    private final Random random = new Random();
+    private final Random random;
 
-    public void processPushNotification(EventRequest pushNotificationDetails){
+    public void processPushNotification(EventRequest pushNotificationDetails) throws FirebaseMessagingException {
         try{
             if(random.nextDouble() < 0.1) {
                 throw new RuntimeException("Simulated Processing Failure");
@@ -36,7 +37,7 @@ public class PushNotificationProcessor {
                             .build())
                     .build();
             firebaseMessaging.send(message);
-            System.out.println(pushNotificationDetails.getEventId() + " Push Processed By " + Thread.currentThread().getName());
+
             CallBackResponse response =
                     new CallBackResponse(pushNotificationDetails.getEventId(), "COMPLETED",
                             pushNotificationDetails.getEventType(), null, new Date());
@@ -48,6 +49,7 @@ public class PushNotificationProcessor {
                             pushNotificationDetails.getEventType(), e.getMessage(), new Date());
             HttpEntity<CallBackResponse> entity = new HttpEntity<>(response);
             restTemplate.exchange(pushNotificationDetails.getCallbackUrl(), HttpMethod.POST, entity, void.class);
+            throw e;
         }
     }
 

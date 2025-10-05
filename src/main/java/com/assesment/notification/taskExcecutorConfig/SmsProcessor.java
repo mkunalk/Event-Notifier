@@ -29,9 +29,9 @@ public class SmsProcessor {
     private String twilioPhoneNumber;
 
     private final RestTemplate restTemplate;
-    private final Random random = new Random();
+    private final Random random;
 
-    public void processSms(EventRequest smsDetails){
+    public void processSms(EventRequest smsDetails) throws Exception{
         try {
             if(random.nextDouble() < 0.1){
                 throw new RuntimeException("Simulated Processing Failure");
@@ -41,7 +41,6 @@ public class SmsProcessor {
                     new PhoneNumber(smsDetails.getPhoneNumber()),
                     new PhoneNumber(twilioPhoneNumber),
                     smsDetails.getMessage()).create();
-
             CallBackResponse response =
                     new CallBackResponse(smsDetails.getEventId(),"COMPLETED",
                             smsDetails.getEventType(), null, new Date());
@@ -53,6 +52,7 @@ public class SmsProcessor {
                             smsDetails.getEventType(), e.getMessage(), new Date());
             HttpEntity<CallBackResponse> entity = new HttpEntity<>(response);
             restTemplate.exchange(smsDetails.getCallbackUrl(), HttpMethod.POST, entity, void.class);
+            throw e;
         }
 
     }

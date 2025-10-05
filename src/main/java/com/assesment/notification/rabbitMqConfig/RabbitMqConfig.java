@@ -11,6 +11,7 @@ import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.retry.interceptor.RetryOperationsInterceptor;
 
 @Configuration
@@ -84,6 +85,7 @@ public class RabbitMqConfig {
     }
 
     @Bean
+    @Profile("!test")
     public SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory() {
         final SimpleRabbitListenerContainerFactory factory = new SimpleRabbitListenerContainerFactory();
         factory.setConnectionFactory(connectionFactory());
@@ -96,7 +98,7 @@ public class RabbitMqConfig {
         return factory;
     }
 
-    @Bean("operationsInterceptor")
+    @Bean()
     public RetryOperationsInterceptor setRetries() {
         return RetryInterceptorBuilder.stateless()
                 .maxAttempts(4)

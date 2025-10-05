@@ -1,6 +1,7 @@
 package com.assesment.notification.taskExcecutorConfig;
 
 import com.assesment.notification.dataTo.EventRequest;
+import com.google.firebase.messaging.FirebaseMessagingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.scheduling.annotation.Async;
@@ -15,21 +16,20 @@ public class RabbitQueuesListener {
 
     @RabbitListener(queues = "emailQueue")
     @Async("taskExecutorEmail")
-    public void receiveEmail(EventRequest emailDetails){
-        System.out.println(emailDetails.getEventId() + " Email Received");
+    public void receiveEmail(EventRequest emailDetails) throws Exception {
+        System.out.println(Thread.currentThread().getName());
         emailProcessor.processEmail(emailDetails);
     }
 
     @RabbitListener(queues = "smsQueue")
     @Async("taskExecutorSms")
-    public void receiveSms(EventRequest smsDetails){
+    public void receiveSms(EventRequest smsDetails) throws Exception{
         smsProcessor.processSms(smsDetails);
     }
 
     @RabbitListener(queues = "pushNotificationQueue")
     @Async("taskExecutorPush")
-    public void receivePushNotification(EventRequest pushNotificationDetails){
-        System.out.println(pushNotificationDetails.getEventId() + " Push Received");
+    public void receivePushNotification(EventRequest pushNotificationDetails) throws FirebaseMessagingException {
         pushNotificationProcessor.processPushNotification(pushNotificationDetails);
     }
 

@@ -21,13 +21,13 @@ public class EmailProcessor {
 
     private final JavaMailSender javaMailSender;
     private final RestTemplate restTemplate;
-    private final Random random = new Random();
+    private final Random random;
 
     @Value("${spring.mail.username}")
     private String username;
-
-    public void processEmail(EventRequest emailDetails){
-
+    //@Async("taskExecutorEmail")
+    public void processEmail(EventRequest emailDetails) throws Exception{
+        System.out.println(Thread.currentThread().getName());
         try{
             if(random.nextDouble() < 0.1) {
                 throw new RuntimeException("Simulated Processing Failure");
@@ -38,7 +38,6 @@ public class EmailProcessor {
             simpleMailMessage.setText(emailDetails.getMessage());
             simpleMailMessage.setSubject("Sprih Assesment");
             javaMailSender.send(simpleMailMessage);
-            System.out.println(emailDetails.getEventId() + " EMail Processed By " + Thread.currentThread().getName());
 
             CallBackResponse response = new CallBackResponse(emailDetails.getEventId(), "COMPLETED",
                     emailDetails.getEventType(), null, new Date());
@@ -49,6 +48,7 @@ public class EmailProcessor {
                     emailDetails.getEventType(), e.getMessage(), new Date());
             HttpEntity<CallBackResponse> entity = new HttpEntity<>(response);
             restTemplate.exchange(emailDetails.getCallbackUrl(), HttpMethod.POST, entity, void.class);
+            throw e;
         }
 
     }
