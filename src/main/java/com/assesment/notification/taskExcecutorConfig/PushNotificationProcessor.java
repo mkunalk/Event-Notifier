@@ -13,17 +13,20 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Date;
+import java.util.Random;
 
 @Component
 @RequiredArgsConstructor
 public class PushNotificationProcessor {
     private final FirebaseMessaging firebaseMessaging;
     private final RestTemplate restTemplate;
+    private final Random random = new Random();
 
-    @Async("taskExecutor")
     public void processPushNotification(EventRequest pushNotificationDetails){
-
         try{
+            if(random.nextDouble() < 0.1) {
+                throw new RuntimeException("Simulated Processing Failure");
+            }
             Message message = Message
                     .builder()
                     .setToken(pushNotificationDetails.getDeviceId())
@@ -33,6 +36,7 @@ public class PushNotificationProcessor {
                             .build())
                     .build();
             firebaseMessaging.send(message);
+            System.out.println(pushNotificationDetails.getEventId() + " Push Processed By " + Thread.currentThread().getName());
             CallBackResponse response =
                     new CallBackResponse(pushNotificationDetails.getEventId(), "COMPLETED",
                             pushNotificationDetails.getEventType(), null, new Date());
@@ -41,7 +45,7 @@ public class PushNotificationProcessor {
         } catch (Exception e){
             CallBackResponse response =
                     new CallBackResponse(pushNotificationDetails.getEventId(), "FAILED",
-                            pushNotificationDetails.getEventType(), null, new Date());
+                            pushNotificationDetails.getEventType(), e.getMessage(), new Date());
             HttpEntity<CallBackResponse> entity = new HttpEntity<>(response);
             restTemplate.exchange(pushNotificationDetails.getCallbackUrl(), HttpMethod.POST, entity, void.class);
         }

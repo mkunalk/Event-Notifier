@@ -14,31 +14,35 @@ import java.util.concurrent.atomic.AtomicLong;
 @RequiredArgsConstructor
 public class NotificationServiceImpl implements NotificationService {
     private final RabbitTemplate template;
-    private final AtomicLong eventNumber = new AtomicLong(0);
+    private int eventNumber = 0;
 
     @Override
     public EventResponse processEvents(EventRequest request) {
         String exchangeName = "events";
         String message = "Event accepted for processing";
-        String eventId = "e"+ eventNumber.incrementAndGet();
-        switch (request.getEventType()) {
-            case "EMAIL" -> {
-                String emailRoutingKey = "email";
-                request.setEventId(eventId);
-                template.convertAndSend(exchangeName, emailRoutingKey, request);
-            }
-            case "SMS" -> {
-                String smsRoutingKey = "sms";
-                request.setEventId(eventId);
-                template.convertAndSend(exchangeName, smsRoutingKey, request);
-            }
-            case "PUSH" -> {
-                request.setEventId(eventId);
-                String pushNotificationRoutingKey = "push-notification";
-                template.convertAndSend(exchangeName, pushNotificationRoutingKey, request);
-            }
-            default -> {
-                return new EventResponse(null, "Invalid Parameters");
+        String eventId = "e";
+        synchronized (NotificationServiceImpl.class) {
+            eventId += eventNumber;
+            eventNumber += 1;
+            switch (request.getEventType()) {
+                case "EMAIL" -> {
+                    String emailRoutingKey = "email";
+                    request.setEventId(eventId);
+                    template.convertAndSend(exchangeName, emailRoutingKey, request);
+                }
+                case "SMS" -> {
+                    String smsRoutingKey = "sms";
+                    request.setEventId(eventId);
+                    template.convertAndSend(exchangeName, smsRoutingKey, request);
+                }
+                case "PUSH" -> {
+                    request.setEventId(eventId);
+                    String pushNotificationRoutingKey = "push-notification";
+                    template.convertAndSend(exchangeName, pushNotificationRoutingKey, request);
+                }
+                default -> {
+                    return new EventResponse(null, "Invalid Parameters");
+                }
             }
         }
 

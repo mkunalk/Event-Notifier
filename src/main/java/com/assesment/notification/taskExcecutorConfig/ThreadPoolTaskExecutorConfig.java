@@ -9,12 +9,35 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 @EnableAsync
 public class ThreadPoolTaskExecutorConfig {
 
-    @Bean(name = "taskExecutor")
-    public ThreadPoolTaskExecutor threadPoolTaskSchedulerConfig(){
+    @Bean(name = "taskExecutorEmail")
+    public ThreadPoolTaskExecutor threadPoolTaskSchedulerEmailConfig(){
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setCorePoolSize(3);
-        executor.setMaxPoolSize(5);
-        executor.setThreadNamePrefix("QueueProcessors");
+        executor.setCorePoolSize(1);
+        executor.setMaxPoolSize(1);
+        executor.setThreadNamePrefix("EmailQueueProcessors");
+        executor.setWaitForTasksToCompleteOnShutdown(true);
+        executor.initialize();
+        return executor;
+    }
+
+    @Bean(name = "taskExecutorSms")
+    public ThreadPoolTaskExecutor threadPoolTaskSchedulerSmsConfig(){
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        executor.setCorePoolSize(1);
+        executor.setMaxPoolSize(1);
+        executor.setThreadNamePrefix("SmsQueueProcessors");
+        executor.setWaitForTasksToCompleteOnShutdown(true);
+        executor.initialize();
+        return executor;
+    }
+
+    @Bean(name = "taskExecutorPush")
+    public ThreadPoolTaskExecutor threadPoolTaskSchedulerPushConfig(){
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        executor.setCorePoolSize(1);
+        executor.setMaxPoolSize(1);
+        executor.setThreadNamePrefix("PushQueueProcessors");
+        executor.setWaitForTasksToCompleteOnShutdown(true);
         executor.initialize();
         return executor;
     }
