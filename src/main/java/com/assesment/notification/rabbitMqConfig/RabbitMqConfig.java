@@ -11,20 +11,22 @@ import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 import org.springframework.retry.interceptor.RetryOperationsInterceptor;
 
 @Configuration
 public class RabbitMqConfig {
 
-    @Value("${rabbitmq.username}")
-    private String username;
-    @Value("${rabbitmq.password}")
-    private String password;
-    @Value("${rabbitmq.host}")
-    private String host;
+//    @Value("${rabbitmq.username}")
+//    private String username;
+//    @Value("${rabbitmq.password}")
+//    private String password;
+//    @Value("${rabbitmq.host}")
+//    private String host;
 
     @Bean
+    @Primary
     public Queue emailQueue(){
         return new Queue("emailQueue");
     }
@@ -36,6 +38,7 @@ public class RabbitMqConfig {
 
     @Bean
     public Queue pushNotificationQueue(){
+        System.out.println("push queue created");
         return new Queue("pushNotificationQueue");
     }
 
@@ -75,37 +78,38 @@ public class RabbitMqConfig {
     public MessageConverter converter(){
         return new Jackson2JsonMessageConverter();
     }
+//    @Bean
+//    public CachingConnectionFactory  connectionFactory(){
+//        CachingConnectionFactory connectionFactorye = new CachingConnectionFactory();
+//        connectionFactorye.setHost(host);
+//        connectionFactorye.setVirtualHost("/");
+//        connectionFactorye.setUsername(username);
+//        connectionFactorye.setPassword(password);
+//        return connectionFactorye;
+//    }
 
-    public CachingConnectionFactory  connectionFactory(){
-        CachingConnectionFactory connectionFactorye = new CachingConnectionFactory();
-        connectionFactorye.setHost(host);
-        connectionFactorye.setUsername(username);
-        connectionFactorye.setPassword(password);
-        return connectionFactorye;
-    }
+//    @Bean
+//    @Profile("!test")
+//    public SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory() {
+//        final SimpleRabbitListenerContainerFactory factory = new SimpleRabbitListenerContainerFactory();
+//        factory.setConnectionFactory(connectionFactory());
+//        factory.setMessageConverter(converter());
+//        factory.setConcurrentConsumers(3);
+//        factory.setMaxConcurrentConsumers(3);
+//        factory.setAcknowledgeMode(AcknowledgeMode.AUTO);
+//        factory.setAdviceChain(setRetries());
+//        factory.setForceStop(false);
+//        return factory;
+//    }
 
-    @Bean
-    @Profile("!test")
-    public SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory() {
-        final SimpleRabbitListenerContainerFactory factory = new SimpleRabbitListenerContainerFactory();
-        factory.setConnectionFactory(connectionFactory());
-        factory.setMessageConverter(converter());
-        factory.setConcurrentConsumers(3);
-        factory.setMaxConcurrentConsumers(3);
-        factory.setAcknowledgeMode(AcknowledgeMode.AUTO);
-        factory.setAdviceChain(setRetries());
-        factory.setForceStop(false);
-        return factory;
-    }
-
-    @Bean()
-    public RetryOperationsInterceptor setRetries() {
-        return RetryInterceptorBuilder.stateless()
-                .maxAttempts(4)
-                .backOffOptions(1000,
-                        2,
-                        10000)
-                .recoverer(new RejectAndDontRequeueRecoverer())
-                .build();
-    }
+//    @Bean()
+//    public RetryOperationsInterceptor setRetries() {
+//        return RetryInterceptorBuilder.stateless()
+//                .maxAttempts(4)
+//                .backOffOptions(1000,
+//                        2,
+//                        10000)
+//                .recoverer(new RejectAndDontRequeueRecoverer())
+//                .build();
+//    }
 }

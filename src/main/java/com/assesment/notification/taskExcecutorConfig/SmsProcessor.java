@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
@@ -30,6 +31,7 @@ public class SmsProcessor {
 
     private final RestTemplate restTemplate;
     private final Random random;
+
 
     public void processSms(EventRequest smsDetails) throws Exception{
         try {

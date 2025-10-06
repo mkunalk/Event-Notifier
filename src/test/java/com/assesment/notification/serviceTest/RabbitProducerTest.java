@@ -26,6 +26,7 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.util.List;
+import java.util.Random;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -57,6 +58,9 @@ public class RabbitProducerTest {
 
     @MockitoBean
     private RabbitQueuesListener rabbitQueuesListener;
+
+    @MockitoBean
+    private Random random;
 
     @DynamicPropertySource
     static void rabbitMQProperties(DynamicPropertyRegistry registry) {

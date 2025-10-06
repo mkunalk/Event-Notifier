@@ -23,6 +23,7 @@ public class PushNotificationProcessor {
     private final RestTemplate restTemplate;
     private final Random random;
 
+
     public void processPushNotification(EventRequest pushNotificationDetails) throws FirebaseMessagingException {
         try{
             if(random.nextDouble() < 0.1) {

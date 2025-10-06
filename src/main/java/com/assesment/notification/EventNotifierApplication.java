@@ -6,6 +6,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.Random;
+
 @SpringBootApplication
 @EnableAsync
 public class EventNotifierApplication {
@@ -17,6 +19,11 @@ public class EventNotifierApplication {
     @Bean
     public RestTemplate restTemplate(){
         return new RestTemplate();
+    }
+
+    @Bean
+    public Random random(){
+        return new Random();
     }
 
 }

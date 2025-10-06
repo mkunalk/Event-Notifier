@@ -1,0 +1,39 @@
+services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    hostname: my-rabbit
+    ports:
+      - "15672:15672"
+      - "5672:5672"
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+    healthcheck:
+      test: [ "CMD", "rabbitmq-diagnostics", "check_port_connectivity" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: always
+
+  event-notifier:
+    build: .
+    container_name: eventnotifier
+    ports:
+      - "8080:8080"
+    environment:
+      - spring.rabbitmq.host=rabbitmq
+      - spring.rabbitmq.port=5672
+      - spring.rabbitmq.username=guest
+      - spring.rabbitmq.password=guest
+      - spring.rabbitmq.virtual-host=/
+      - firebase.config.path=./firebaseConfig.json
+      - twilio.phone.number=
+      - twilio.account.sid=
+      - twilio.auth.token=
+      - spring.mail.username=
+      - spring.mail.password=
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    restart: on-failure

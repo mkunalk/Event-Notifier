@@ -20,9 +20,11 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.util.Random;
+
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
-@SpringBootTest()
+@SpringBootTest
 @ActiveProfiles("test")
 class EventNotifierApplicationTests {
 
@@ -43,6 +45,9 @@ class EventNotifierApplicationTests {
 
     @MockitoBean
     private RabbitQueuesListener rabbitQueuesListener;
+
+    @MockitoBean
+    private Random random;
 
 	@Test
 	void contextLoads() {

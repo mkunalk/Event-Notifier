@@ -25,9 +25,8 @@ public class EmailProcessor {
 
     @Value("${spring.mail.username}")
     private String username;
-    //@Async("taskExecutorEmail")
+
     public void processEmail(EventRequest emailDetails) throws Exception{
-        System.out.println(Thread.currentThread().getName());
         try{
             if(random.nextDouble() < 0.1) {
                 throw new RuntimeException("Simulated Processing Failure");
@@ -38,7 +37,6 @@ public class EmailProcessor {
             simpleMailMessage.setText(emailDetails.getMessage());
             simpleMailMessage.setSubject("Sprih Assesment");
             javaMailSender.send(simpleMailMessage);
-
             CallBackResponse response = new CallBackResponse(emailDetails.getEventId(), "COMPLETED",
                     emailDetails.getEventType(), null, new Date());
             HttpEntity<CallBackResponse> entity = new HttpEntity<>(response);

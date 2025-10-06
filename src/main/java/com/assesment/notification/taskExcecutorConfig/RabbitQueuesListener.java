@@ -4,6 +4,7 @@ import com.assesment.notification.dataTo.EventRequest;
 import com.google.firebase.messaging.FirebaseMessagingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
@@ -17,10 +18,8 @@ public class RabbitQueuesListener {
     @RabbitListener(queues = "emailQueue")
     @Async("taskExecutorEmail")
     public void receiveEmail(EventRequest emailDetails) throws Exception {
-        System.out.println(Thread.currentThread().getName());
         emailProcessor.processEmail(emailDetails);
     }
-
     @RabbitListener(queues = "smsQueue")
     @Async("taskExecutorSms")
     public void receiveSms(EventRequest smsDetails) throws Exception{
