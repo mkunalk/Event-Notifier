@@ -16,4 +16,27 @@
 4: Run docker compose up
 ```
 
+### Sample payload for /api/events
+1: {
+    "eventType": "EMAIL",
+    "recipient":"abcd@gmail.com",
+    "message": "hello",
+    "callbackUrl": "http://client-system.com/api/event-status"
+  }
+
+2: {
+    "eventType": "SMS",
+    "phoneNumber":"+9100330333",
+    "message": "hello",
+    "callbackUrl": "http://client-system.com/api/event-status"
+  }
+  
+3: {
+    "eventType": "PUSH",
+    "deviceId":"device-1",
+    "message": "hello",
+    "callbackUrl": "http://client-system.com/api/event-status"
+  }
+
+
 
